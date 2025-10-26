@@ -1,1 +1,14 @@
+# VSCode build klasörü
 build/
+
+# CLion build klasörü
+cmake-build-debug/
+
+# CLion ayar klasörü (ÇOK ÖNEMLİ)
+.idea/
+
+# macOS sistem dosyaları
+.DS_Store
+
+# Üretilen çıktı dosyaları (isteğe bağlı ama önerilir)
+*.svg
