@@ -3,6 +3,7 @@
 #include <cmath>   // std::abs, std::sqrt
 #include <random>  // Rastgele sayı üretmek için
 #include <limits>  // std::numeric_limits
+#include <chrono> // Zamanı okumak için
 
 // === RANSAC YARDIMCI FONKSİYONLARI ===
 
@@ -39,7 +40,8 @@ std::vector<Line> findLinesRANSAC(
     std::vector<Point> remainingPoints = allPoints;
 
     // Rastgele sayı üreteci (RNG)
-    std::mt19937 rng(std::random_device{}());
+    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    std::mt19937 rng(seed);
 
     int iters = 0;
     while (iters < maxIterations && remainingPoints.size() > minInliers) {
