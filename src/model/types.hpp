@@ -17,6 +17,10 @@ struct Line {
 
     // Bu doğruyu hangi noktaların oluşturduğunu saklamak için
     std::vector<Point> inlierPoints;
+
+    // Görev A.1 için: Doğru parçasının başlangıç ve bitiş noktaları
+    Point startPoint;
+    Point endPoint;
 };
 
 // .toml dosyasından okunan ham LIDAR verilerini tutar
