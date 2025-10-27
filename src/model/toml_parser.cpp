@@ -123,7 +123,7 @@ std::optional<LidarScan> loadScanFromFile(const std::string& path) {
         scan.ranges.push_back(val);
     }
 
-    std::cout << "TOML Parser: " << scan.ranges.size() << " adet 'range' degeri okundu." << std::endl;
+
 
     return scan;
 }
