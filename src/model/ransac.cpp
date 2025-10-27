@@ -166,6 +166,6 @@ std::vector<Line> findLinesRANSAC(
         }
     }
 
-    std::cout << "RANSAC (v2) tamamlandi. Toplam " << foundLines.size() << " adet dogru parcasi bulundu." << std::endl;
+
     return foundLines;
 }

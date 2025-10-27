@@ -32,3 +32,10 @@ struct LidarScan {
     double range_max = 0.0;
     std::vector<double> ranges; // Tüm mesafe ölçümleri
 };
+
+// Geçerli bir kesişimin bilgilerini tutar
+struct Intersection {
+    Point position; // Kesişim noktası (x, y)
+    double angleDeg; // Kesişim açısı (derece)
+    double distanceToRobot; // Robota (0,0) olan mesafe
+};

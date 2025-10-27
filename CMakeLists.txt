@@ -17,7 +17,9 @@ set(PROJECT_SOURCES
 
         src/controller/app_controller.cpp
 
+        # BU SATIRIN LİSTEDE OLMASI GEREKİYOR:
         src/model/geometry.cpp
+
         src/model/lidar.cpp
         src/model/ransac.cpp
         src/model/toml_parser.cpp
