@@ -1,127 +1,94 @@
-#include "app_controller.hpp"    // Kendi header'ı
-#include "model/lidar.hpp"       // Filtreleme
-#include "model/toml_parser.hpp" // TOML Okuyucu
-#include "model/types.hpp"       // Tüm struct'lar (Point, Line, LidarScan, Intersection, SvgParams)
-#include "model/ransac.hpp"      // RANSAC
-#include "model/geometry.hpp"    // Geometri
-#include "utils/cli.hpp"         // Komut Satırı Parametreleri
-#include "view/svg_writer.hpp"   // SVG Yazıcı
-#include <iostream>  // std::cout, std::cerr
+// Gerekli header'lar...
+#include "app_controller.hpp"
+#include "model/lidar.hpp"
+#include "model/toml_parser.hpp"
+#include "model/ransac.hpp"
+#include "model/geometry.hpp"
+// ...diğer model header'ları...
+#include "utils/cli.hpp"
+#include "view/svg_writer.hpp"   // SVG View
+#include "view/console_view.hpp" // YENİ EKLENDİ: Console View
 #include <stdexcept> // std::runtime_error
-#include <cstdlib>   // std::system (curl çağırmak için)
-#include <optional>  // std::optional
-#include <vector>    // std::vector
-#include <string>    // std::string
+#include <cstdlib>   // std::system
+// #include <iostream> // ARTIK GEREKLİ DEĞİL!
 
-// Constructor (Yapıcı): CLI parametrelerini alır
+// Constructor (Yapıcı)
 AppController::AppController(const CliParams& params)
-    : m_params(params) // m_params değişkenini ilk değer atamasıyla doldur
+    : m_params(params)
 {
-    // Constructor'ın içi
-    std::cout << "Controller baslatildi.\n";
-    std::cout << "Okunacak dosya: " << m_params.inputPath << std::endl; // Bu satır ikinizde de vardı
+    // Sadece View'ı çağırır
+    ConsoleView::printControllerStart(m_params.inputPath);
 }
 
-// Ana uygulama akışı: 'run' fonksiyonu
+// Ana uygulama akışı
 void AppController::run() {
-    std::cout << "Uygulama calisiyor...\n";
+    ConsoleView::printAppRunning();
 
     // 1. Girdi yolunu al ve URL olup olmadığını kontrol et
     std::string filePath = m_params.inputPath;
-    std::string localPath = "data/downloaded_scan.toml"; // İndirilen dosyanın kaydedileceği yerel yol
+    std::string localPath = "data/downloaded_scan.toml";
 
-    // Girdi 'http' ile başlıyorsa, bu bir URL'dir
     if (filePath.rfind("http", 0) == 0) {
-        std::cout << "[i] URL tespit edildi, indiriliyor...\n";
+        ConsoleView::printUrlDownload(); // View'ı çağır
 
         std::string command;
-        int result_code = 1; // Komutun başarı durumunu tutar (0 = başarılı)
+        int result_code = 1;
 
-// 2. Platforma özel indirme komutunu çalıştır (Windows vs. macOS/Linux)
 #ifdef _WIN32
-        // Windows: Önce PowerShell komutunu (Invoke-WebRequest) dene
         command = "powershell -Command \"Invoke-WebRequest -UseBasicParsing -Uri '" + filePath + "' -OutFile '" + localPath + "'\"";
         result_code = std::system(command.c_str());
 
         if (result_code != 0) {
-            // PowerShell başarısız olursa (örn. yüklü değilse), 'curl' komutunu dene
-            std::cout << "[i] PowerShell basarisiz oldu, 'curl' ile deneniyor..." << std::endl;
+            ConsoleView::printUrlDownloadFallback(); // View'ı çağır
             command = "curl -L -s -o \"" + localPath + "\" \"" + filePath + "\"";
             result_code = std::system(command.c_str());
         }
 #else
-        // macOS / Linux: Doğrudan 'curl' komutunu kullan
         command = "curl -L -s -o '" + localPath + "' '" + filePath + "'";
         result_code = std::system(command.c_str());
 #endif
 
-        // 3. Hata Kontrolü: İndirme işlemi başarılı oldu mu?
+        // 3. Hata Kontrolü (Hata fırlatma Controller'ın işidir)
         if (result_code != 0) {
-             // 'result_code' 0 değilse, komut başarısız olmuştur (404, ağ hatası vb.)
-             // Programı hemen durdur ve bir hata fırlat.
              throw std::runtime_error("[HATA] Dosya indirilemedi: " + filePath +
                                       " | Lutfen URL'yi veya internet baglantinizi kontrol edin.");
         }
 
-        // İndirme başarılıysa, TOML parser'a bu yeni yerel yolu ver
         filePath = localPath;
-        std::cout << "[i] Dosya '" << localPath << "' olarak basariyla indirildi.\n";
+        ConsoleView::printUrlDownloadSuccess(localPath); // View'ı çağır
     }
 
-    // --- (URL indirme kod bloğu buradan önce gelir) ---
-
     // 4. TOML dosyasını oku ve verileri işle
-    // (Bu noktada 'filePath' ya orijinal yoldur ya da indirilen dosyanın yoludur)
     std::optional<LidarScan> scanData = loadScanFromFile(filePath);
-
-    // std::optional kullanarak C++'a daha uygun bir hata kontrolü
     if (!scanData) {
         throw std::runtime_error("TOML dosyasi okunamadi veya islenemedi: " + filePath);
     }
-    std::cout << "TOML Parser: " << scanData->ranges.size() << " adet 'range' degeri okundu." << std::endl;
+    ConsoleView::printTomlResult(scanData->ranges.size()); // View'ı çağır
 
-    // 5. Filtrele ve Kartezyen Koordinatlara Dönüştür (İster 1)
-    // (NaN, min/max dışı değerler filtrelenir ve kutupsaldan kartezyene geçilir)
+    // 5. Filtrele ve Kartezyen Koordinatlara Dönüştür
     std::vector<Point> allPoints = filterAndConvertToPoints(*scanData);
-    std::cout << "Lidar Filtre: " << allPoints.size() << " adet gecerli nokta bulundu." << std::endl;
+    ConsoleView::printFilterResult(allPoints.size()); // View'ı çağır
 
-    // 6. Doğru Parçalarını Bul (İster 2)
-    // (Filtrelenmiş nokta bulutu üzerinde RANSAC algoritmasını çalıştır)
+    // 6. Doğru Parçalarını Bul
     std::vector<Line> segments = findLinesRANSAC(
-        allPoints,
-        m_params.minInliers,
-        m_params.epsilon,
-        m_params.maxIters
+        allPoints, m_params.minInliers, m_params.epsilon, m_params.maxIters
     );
-    std::cout << "RANSAC (v2) tamamlandi. Toplam " << segments.size() << " adet dogru parcasi bulundu." << std::endl;
+    ConsoleView::printRansacResult(segments.size()); // View'ı çağır
 
     // 7. Geometrik Analiz
-    // (Tespit edilen doğru parçaları arasında fiziksel kesişimleri ve açıları bul)
     std::vector<Intersection> intersections = findPhysicalIntersections(
-        segments,
-        m_params.angleThreshDeg // CLI'dan gelen minimum açı eşiği (örn: 60 derece)
+        segments, m_params.angleThreshDeg
     );
-    std::cout << "Geometri Analizi: Toplam " << intersections.size()
-              << " adet gecerli ('" << m_params.angleThreshDeg << " derece ustu') kesisim bulundu." << std::endl;
+    ConsoleView::printGeometryResult(intersections.size(), m_params.angleThreshDeg); // View'ı çağır
 
     // 8. Raporlama
     // Adım 8a: Sonuçları konsola metin olarak yazdır
-    std::cout << "--- Kesisim Raporu ---\n";
-    for (size_t i = 0; i < intersections.size(); ++i) {
-        const auto& k = intersections[i]; // Okunabilirlik için kısa değişken adı
-
-        // Raporu formatlı bir şekilde yazdır
-        std::cout << "#" << (i + 1) << " -> (" << k.position.x << ", " << k.position.y
-                  << ")  angle=" << k.angleDeg
-                  << " deg  dist=" << k.distanceToRobot << " m\n";
-    }
+    ConsoleView::printFinalReport(intersections); // View'ı çağır
 
     // Adım 8b: Sonuçları SVG dosyasına grafiksel olarak yazdır
-    // (SVG parametrelerini CLI'dan alarak ayarla)
     SvgParams sp{ m_params.svgWidth, m_params.svgHeight, m_params.svgMargin };
-    saveToSVG(m_params.outSvg, allPoints, segments, intersections, sp);
+    saveToSVG(m_params.outSvg, allPoints, segments, intersections, sp); // Diğer View'ı (SVG) çağır
 
-    std::cout << "[i] SVG ciktisi su dosyaya kaydedildi: " << m_params.outSvg << "\n";
-
-    std::cout << "Uygulama tamamlandi.\n";
+    ConsoleView::printSvgSuccess(m_params.outSvg); // View'ı çağır
+    ConsoleView::printAppComplete(); // View'ı çağır
 }
