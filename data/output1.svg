@@ -34,7 +34,7 @@
 
 <rect x='10' y='10' width='1180' height='50' rx='8' fill='white' opacity='0.9' filter='url(#shadow)'/>
 <text x='600' y='35' text-anchor='middle' font-family='Arial, sans-serif' font-size='20' font-weight='bold' fill='#212529'>LIDAR Geometrik Analiz</text>
-<text x='600' y='52' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' fill='#6c757d'>Nokta: 202 | Doğru: 10 | Kesişim: 5</text>
+<text x='600' y='52' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' fill='#6c757d'>Nokta: 202 | Doğru: 9 | Kesişim: 5</text>
 
 <g id='lidar-points'>
   <circle cx='631.67' cy='439.216' r='1.75' fill='#adb5bd' opacity='0.4'/>
@@ -242,59 +242,58 @@
 </g>
 
 <g id='detected-lines'>
-  <line x1='639.506' y1='277.214' x2='262.147' y2='125.719' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='500.399' y1='202.095' x2='118.426' y2='633.818' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='690.463' y1='379.401' x2='310.586' y2='132.134' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='689.367' y1='366.229' x2='459.22' y2='622.74' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='694.394' y1='358.182' x2='646.887' y2='275.352' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='562.576' y1='253.118' x2='281.694' y2='204.992' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='686.298' y1='336.862' x2='530.392' y2='203.317' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='684.481' y1='328.481' x2='554.523' y2='213.321' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='694.509' y1='379.037' x2='673.268' y2='345.109' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
-  <line x1='354.45' y1='210.972' x2='295.21' y2='805.96' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='557.749' y1='239.65' x2='269.603' y2='236.34' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='643.76' y1='284.184' x2='262.081' y2='125.879' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='678.562' y1='313.485' x2='514.274' y2='197.079' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='633.281' y1='424.129' x2='647.504' y2='290.935' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='462.592' y1='249.52' x2='53.9351' y2='425.535' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='699.773' y1='376.983' x2='690.821' y2='329.098' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='531.686' y1='205.671' x2='281.911' y2='202.615' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='691.015' y1='371.814' x2='673.504' y2='344.958' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
+  <line x1='354.422' y1='144.887' x2='333.61' y2='806.506' stroke='#51cf66' stroke-width='3' stroke-linecap='round' opacity='0.8' filter='url(#glow)'/>
 </g>
 
 <g id='intersections'>
-  <line x1='479.943' y1='439.216' x2='487.816' y2='216.317' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
+  <line x1='479.943' y1='439.216' x2='351.515' y2='237.281' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
   <g filter='url(#shadow)'>
-    <line x1='479.816' y1='208.317' x2='495.816' y2='224.317' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
-    <line x1='479.816' y1='224.317' x2='495.816' y2='208.317' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='343.515' y1='229.281' x2='359.515' y2='245.281' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='343.515' y1='245.281' x2='359.515' y2='229.281' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
   </g>
-  <rect x='505.816' y='200.317' width='45' height='32' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
-  <text x='528.316' y='213.317' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.47 m</text>
-  <text x='528.32' y='225.32' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>70°</text>
-  <line x1='479.94' y1='439.22' x2='470.31' y2='236.10' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
+  <rect x='369.515' y='221.281' width='45' height='32' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
+  <text x='392.015' y='234.281' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.58 m</text>
+  <text x='392.02' y='246.28' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>89°</text>
+  <line x1='479.94' y1='439.22' x2='353.82' y2='163.93' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
   <g filter='url(#shadow)'>
-    <line x1='462.31' y1='228.10' x2='478.31' y2='244.10' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
-    <line x1='462.31' y1='244.10' x2='478.31' y2='228.10' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='345.82' y1='155.93' x2='361.82' y2='171.93' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='345.82' y1='171.93' x2='361.82' y2='155.93' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
   </g>
-  <rect x='407.31' y='220.10' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
-  <text x='429.81' y='233.10' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.34 m</text>
-  <text x='429.81' y='245.10' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>81°</text>
-  <line x1='479.94' y1='439.22' x2='682.31' y2='374.09' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
+  <rect x='371.82' y='147.93' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
+  <text x='394.32' y='160.93' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>2.00 m</text>
+  <text x='394.32' y='172.93' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>69°</text>
+  <line x1='479.94' y1='439.22' x2='647.45' y2='291.44' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
   <g filter='url(#shadow)'>
-    <line x1='674.31' y1='366.09' x2='690.31' y2='382.09' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
-    <line x1='674.31' y1='382.09' x2='690.31' y2='366.09' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='639.45' y1='283.44' x2='655.45' y2='299.44' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='639.45' y1='299.44' x2='655.45' y2='283.44' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
   </g>
-  <rect x='700.31' y='358.09' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
-  <text x='722.81' y='371.09' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.40 m</text>
-  <text x='722.81' y='383.09' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>81°</text>
-  <line x1='479.94' y1='439.22' x2='687.67' y2='368.12' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
+  <rect x='665.45' y='275.44' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
+  <text x='687.95' y='288.44' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.47 m</text>
+  <text x='687.95' y='300.44' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>61°</text>
+  <line x1='479.94' y1='439.22' x2='349.60' y2='298.19' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
   <g filter='url(#shadow)'>
-    <line x1='679.67' y1='360.12' x2='695.67' y2='376.12' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
-    <line x1='679.67' y1='376.12' x2='695.67' y2='360.12' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='341.60' y1='290.19' x2='357.60' y2='306.19' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='341.60' y1='306.19' x2='357.60' y2='290.19' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
   </g>
-  <rect x='624.67' y='352.12' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
-  <text x='647.17' y='365.12' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.45 m</text>
-  <text x='647.17' y='377.12' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>72°</text>
-  <line x1='479.94' y1='439.22' x2='353.82' y2='217.35' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
+  <rect x='367.60' y='282.19' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
+  <text x='390.10' y='295.19' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.27 m</text>
+  <text x='390.10' y='307.19' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>65°</text>
+  <line x1='479.94' y1='439.22' x2='352.58' y2='203.48' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' opacity='0.7'/>
   <g filter='url(#shadow)'>
-    <line x1='345.82' y1='209.35' x2='361.82' y2='225.35' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
-    <line x1='345.82' y1='225.35' x2='361.82' y2='209.35' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='344.58' y1='195.48' x2='360.58' y2='211.48' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
+    <line x1='344.58' y1='211.48' x2='360.58' y2='195.48' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>
   </g>
-  <rect x='290.82' y='201.35' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
-  <text x='313.32' y='214.35' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.68 m</text>
-  <text x='313.32' y='226.35' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>86°</text>
+  <rect x='289.58' y='187.48' width='45.00' height='32.00' rx='5' fill='white' stroke='#ff922b' stroke-width='1.5' opacity='0.95' filter='url(#shadow)'/>
+  <text x='312.08' y='200.48' text-anchor='middle' font-family='Arial, sans-serif' font-size='11' font-weight='bold' fill='#ff6b6b'>1.77 m</text>
+  <text x='312.08' y='212.48' text-anchor='middle' font-family='Arial, sans-serif' font-size='9' fill='#495057'>88°</text>
 </g>
 
 <g id='robot' transform='translate(464.94,424.22)'>

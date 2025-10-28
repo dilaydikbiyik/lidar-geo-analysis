@@ -5,8 +5,7 @@
 #include "model/ransac.hpp"      // RANSAC
 #include "model/geometry.hpp"    // Geometri
 #include "utils/cli.hpp"         // Komut Satırı Parametreleri
-#include "view/svg_writer.hpp"   // SVG Yazıcı (Arkadaşının görevi)
-
+#include "view/svg_writer.hpp"   // SVG Yazıcı
 #include <iostream>  // std::cout, std::cerr
 #include <stdexcept> // std::runtime_error
 #include <cstdlib>   // std::system (curl çağırmak için)
@@ -25,78 +24,104 @@ AppController::AppController(const CliParams& params)
 
 // Ana uygulama akışı: 'run' fonksiyonu
 void AppController::run() {
-    std::cout << "Uygulama calisiyor...\n"; // Bu satır ikinizde de vardı
+    std::cout << "Uygulama calisiyor...\n";
 
-    // --- Görev B.2: URL ise indir ---
+    // 1. Girdi yolunu al ve URL olup olmadığını kontrol et
     std::string filePath = m_params.inputPath;
-    if (filePath.rfind("http", 0) == 0) { // URL kontrolü
-        std::cout << "[i] URL tespit edildi, indiriliyor...\n"; // Arkadaşından
-        std::string local = "data/downloaded_scan.toml"; // Geçici dosya adı (Arkadaşından)
-        std::string cmd; // Arkadaşından
-// Platforma özel indirme komutu (Arkadaşından)
+    std::string localPath = "data/downloaded_scan.toml"; // İndirilen dosyanın kaydedileceği yerel yol
+
+    // Girdi 'http' ile başlıyorsa, bu bir URL'dir
+    if (filePath.rfind("http", 0) == 0) {
+        std::cout << "[i] URL tespit edildi, indiriliyor...\n";
+
+        std::string command;
+        int result_code = 1; // Komutun başarı durumunu tutar (0 = başarılı)
+
+// 2. Platforma özel indirme komutunu çalıştır (Windows vs. macOS/Linux)
 #ifdef _WIN32
-        cmd = "powershell -Command \"Invoke-WebRequest -UseBasicParsing -Uri '" + filePath + "' -OutFile '" + local + "'\""; // Arkadaşından
-        int rc = std::system(cmd.c_str()); // Arkadaşından
-        if (rc != 0) { cmd = "curl -L -s -o \"" + local + "\" \"" + filePath + "\""; // Fallback curl (Arkadaşından)
-            rc = std::system(cmd.c_str()); } // Arkadaşından
-#else
-        // macOS/Linux için curl komutu
-        cmd = "curl -L -s -o '" + local + "' '" + filePath + "'"; // Arkadaşından
-        int rc = std::system(cmd.c_str()); // Arkadaşından
-#endif
-        if (rc != 0) { // İndirme başarısız olursa hata ver (Arkadaşından)
-             throw std::runtime_error("Dosya indirilemedi: " + filePath); // Arkadaşından
+        // Windows: Önce PowerShell komutunu (Invoke-WebRequest) dene
+        command = "powershell -Command \"Invoke-WebRequest -UseBasicParsing -Uri '" + filePath + "' -OutFile '" + localPath + "'\"";
+        result_code = std::system(command.c_str());
+
+        if (result_code != 0) {
+            // PowerShell başarısız olursa (örn. yüklü değilse), 'curl' komutunu dene
+            std::cout << "[i] PowerShell basarisiz oldu, 'curl' ile deneniyor..." << std::endl;
+            command = "curl -L -s -o \"" + localPath + "\" \"" + filePath + "\"";
+            result_code = std::system(command.c_str());
         }
-        filePath = local; // Artık indirilen lokal dosyayı kullan (Arkadaşından)
-        std::cout << "[i] Dosya '" << local << "' olarak indirildi.\n"; // Arkadaşından
+#else
+        // macOS / Linux: Doğrudan 'curl' komutunu kullan
+        command = "curl -L -s -o '" + localPath + "' '" + filePath + "'";
+        result_code = std::system(command.c_str());
+#endif
+
+        // 3. Hata Kontrolü: İndirme işlemi başarılı oldu mu?
+        if (result_code != 0) {
+             // 'result_code' 0 değilse, komut başarısız olmuştur (404, ağ hatası vb.)
+             // Programı hemen durdur ve bir hata fırlat.
+             throw std::runtime_error("[HATA] Dosya indirilemedi: " + filePath +
+                                      " | Lutfen URL'yi veya internet baglantinizi kontrol edin.");
+        }
+
+        // İndirme başarılıysa, TOML parser'a bu yeni yerel yolu ver
+        filePath = localPath;
+        std::cout << "[i] Dosya '" << localPath << "' olarak basariyla indirildi.\n";
     }
 
-    // --- Görev 1: TOML oku ---
-    // (Artık 'filePath' ya orijinal yol ya da indirilen dosyanın yolu)
-    std::optional<LidarScan> scanData = loadScanFromFile(filePath); // İkinizde de var
-    if (!scanData) { // Daha C++ tarzı kontrol (Arkadaşından)
-        throw std::runtime_error("TOML dosyasi okunamadi veya islenemedi: " + filePath); // Hata mesajı güncellendi (Arkadaşından)
+    // --- (URL indirme kod bloğu buradan önce gelir) ---
+
+    // 4. TOML dosyasını oku ve verileri işle
+    // (Bu noktada 'filePath' ya orijinal yoldur ya da indirilen dosyanın yoludur)
+    std::optional<LidarScan> scanData = loadScanFromFile(filePath);
+
+    // std::optional kullanarak C++'a daha uygun bir hata kontrolü
+    if (!scanData) {
+        throw std::runtime_error("TOML dosyasi okunamadi veya islenemedi: " + filePath);
     }
-    std::cout << "TOML Parser: " << scanData->ranges.size() << " adet 'range' degeri okundu." << std::endl; // İkinizde de var
+    std::cout << "TOML Parser: " << scanData->ranges.size() << " adet 'range' degeri okundu." << std::endl;
 
-    // --- Görev 2: Filtrele ve Dönüştür ---
-    std::vector<Point> allPoints = filterAndConvertToPoints(*scanData); // *scanData kullanımı da geçerli (Arkadaşından)
-    std::cout << "Lidar Filtre: " << allPoints.size() << " adet gecerli nokta bulundu." << std::endl; // İkinizde de var
+    // 5. Filtrele ve Kartezyen Koordinatlara Dönüştür (İster 1)
+    // (NaN, min/max dışı değerler filtrelenir ve kutupsaldan kartezyene geçilir)
+    std::vector<Point> allPoints = filterAndConvertToPoints(*scanData);
+    std::cout << "Lidar Filtre: " << allPoints.size() << " adet gecerli nokta bulundu." << std::endl;
 
-    // --- Görev 3: Doğru Parçalarını Bul (Senin Görevin A.1) ---
+    // 6. Doğru Parçalarını Bul (İster 2)
+    // (Filtrelenmiş nokta bulutu üzerinde RANSAC algoritmasını çalıştır)
     std::vector<Line> segments = findLinesRANSAC(
         allPoints,
         m_params.minInliers,
         m_params.epsilon,
         m_params.maxIters
-    ); // İkinizde de var
-    std::cout << "RANSAC (v2) tamamlandi. Toplam " << segments.size() << " adet dogru parcasi bulundu." << std::endl; // Log mesajı güncellendi (Senin kodundan)
+    );
+    std::cout << "RANSAC (v2) tamamlandi. Toplam " << segments.size() << " adet dogru parcasi bulundu." << std::endl;
 
-    // --- Görev 4: Kesişimleri ve Açıları Hesapla (Senin Görevin A.2) ---
+    // 7. Geometrik Analiz
+    // (Tespit edilen doğru parçaları arasında fiziksel kesişimleri ve açıları bul)
     std::vector<Intersection> intersections = findPhysicalIntersections(
         segments,
-        m_params.angleThreshDeg // minAngleDeg (default: 60)
-    ); // İkinizde de var
+        m_params.angleThreshDeg // CLI'dan gelen minimum açı eşiği (örn: 60 derece)
+    );
     std::cout << "Geometri Analizi: Toplam " << intersections.size()
-              << " adet gecerli ('" << m_params.angleThreshDeg << " derece ustu') kesisim bulundu." << std::endl; // İkinizde de var
+              << " adet gecerli ('" << m_params.angleThreshDeg << " derece ustu') kesisim bulundu." << std::endl;
 
-    // --- Görev 5a: Sonuçları Konsola Yazdır ---
-    std::cout << "--- Kesisim Raporu ---\n"; // Başlık arkadaşından
-    for (size_t i = 0; i < intersections.size(); ++i) { //
-        const auto& k = intersections[i]; // Kısa değişken adı arkadaşından
-        // Arkadaşının formatı biraz daha okunaklı
+    // 8. Raporlama
+    // Adım 8a: Sonuçları konsola metin olarak yazdır
+    std::cout << "--- Kesisim Raporu ---\n";
+    for (size_t i = 0; i < intersections.size(); ++i) {
+        const auto& k = intersections[i]; // Okunabilirlik için kısa değişken adı
+
+        // Raporu formatlı bir şekilde yazdır
         std::cout << "#" << (i + 1) << " -> (" << k.position.x << ", " << k.position.y
                   << ")  angle=" << k.angleDeg
-                  << " deg  dist=" << k.distanceToRobot << " m\n"; // Arkadaşından
+                  << " deg  dist=" << k.distanceToRobot << " m\n";
     }
 
-    // --- Görev 5b: Sonuçları SVG Dosyasına Yazdır (Arkadaşının Görevi B.1) ---
-    // NOT: Bu kod, types.hpp veya cli.hpp'nin SvgParams/SVG argümanlarını
-    // içerecek şekilde güncellenmesini gerektirir.
-    SvgParams sp{ m_params.svgWidth, m_params.svgHeight, m_params.svgMargin }; // Arkadaşından
-    saveToSVG(m_params.outSvg, allPoints, segments, intersections, sp); // Arkadaşından
-    std::cout << "[i] SVG ciktisi su dosyaya kaydedildi: " << m_params.outSvg << "\n"; // Arkadaşından
+    // Adım 8b: Sonuçları SVG dosyasına grafiksel olarak yazdır
+    // (SVG parametrelerini CLI'dan alarak ayarla)
+    SvgParams sp{ m_params.svgWidth, m_params.svgHeight, m_params.svgMargin };
+    saveToSVG(m_params.outSvg, allPoints, segments, intersections, sp);
 
-    std::cout << "Uygulama tamamlandi.\n"; // İkinizde de var
+    std::cout << "[i] SVG ciktisi su dosyaya kaydedildi: " << m_params.outSvg << "\n";
+
+    std::cout << "Uygulama tamamlandi.\n";
 }
-// Senin kodundaki fazladan '}' parantezi kaldırıldı.
