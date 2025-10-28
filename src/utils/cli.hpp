@@ -5,7 +5,7 @@
 struct CliParams {
     // Girdi / çıktı
     std::string inputPath;               // .toml dosya yolu veya URL (zorunlu)
-    std::string outSvg   = "data/output1.svg"; // Senin varsayılan yolun kullanıldı
+    std::string outSvg   = "data/output1.svg"; // Varsayılan yol kullanıldı
 
     // RANSAC / Geometri
     double epsilon       = 0.02;        // RANSAC mesafe eşiği
@@ -13,7 +13,7 @@ struct CliParams {
     int    maxIters      = 1000;        // RANSAC iter sayısı
     double angleThreshDeg= 60.0;        // Doğru çifti açı eşiği (deg)
 
-    // SVG görünüm (Arkadaşından eklendi)
+    // SVG görünüm
     int svgWidth  = 1200;               // SVG genişliği (piksel)
     int svgHeight = 900;                // SVG yüksekliği (piksel)
     int svgMargin = 40;                 // SVG kenar boşluğu (piksel)

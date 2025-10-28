@@ -9,7 +9,7 @@
 #include <string>    // std::string
 #include <limits> // std::numeric_limits eklenmeli (eğer yoksa)
 
-// === Arkadaşının Yardımcı Fonksiyonları ===
+// === Yardımcı Fonksiyonlar ===
 static bool starts_with(const std::string& s, const char* p) {
     return s.rfind(p, 0) == 0;
 }
@@ -34,7 +34,7 @@ static bool parse_double(const std::string& s, double& out) {
     return true;
 }
 
-// --svg-size "1200x900" parse (Arkadaşından)
+// --svg-size "1200x900" parse
 static bool parse_size(const std::string& s, int& w, int& h) {
     auto x = s.find('x');
     if (x == std::string::npos) return false;
@@ -44,7 +44,7 @@ static bool parse_size(const std::string& s, int& w, int& h) {
 }
 // ==========================================
 
-// Birleştirilmiş Yardım Mesajı
+// Yardım Mesajı
 void print_cli_help(const char* exe) {
     std::cout
       << "Usage:\n  " << exe << " [--input <pathOrUrl>] [<pathOrUrl>] [options]\n\n" // Positional eklendi
@@ -64,13 +64,13 @@ void print_cli_help(const char* exe) {
       << "  -h, --help                   Bu yardimi goster\n"; // İkinizde de var
 }
 
-// Birleştirilmiş Argüman Okuyucu
+// Argüman Okuyucu
 std::optional<CliParams> parse_cli(int argc, char* argv[]) {
     if (argc <= 1) { print_cli_help(argv[0]); return std::nullopt; } // İkinizde de var
 
     CliParams p; // Varsayılan değerler cli.hpp'den gelir
 
-    // === SENİN EKLEDİĞİN POSITIONAL ARGUMENT MANTIĞI ===
+    // === POSITIONAL ARGUMENT MANTIĞI ===
     // Flag olmayan ilk argümanı inputPath olarak ata
     bool first_positional_used = false;
     if (argc >= 2 && argv[1][0] != '-') {
@@ -82,57 +82,57 @@ std::optional<CliParams> parse_cli(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
 
-        // === SENİN EKLEDİĞİN POSITIONAL ARGUMENT KONTROLÜ ===
+        // === POSITIONAL ARGUMENT KONTROLÜ ===
         // Eğer ilk argümanı zaten input olarak aldıysak ve bu da ilk argümansa, atla
         if (i == 1 && first_positional_used) {
             continue;
         }
         // ====================================================
 
-        if (a == "-h" || a == "--help") { // İkinizde de var
+        if (a == "-h" || a == "--help") {
             print_cli_help(argv[0]);
             return std::nullopt;
         }
-        else if (a == "-i" || a == "--input") { // İkinizde de var
+        else if (a == "-i" || a == "--input") {
             if (i + 1 >= argc) { std::cerr << "[!] " << a << " deger bekliyor\n"; return std::nullopt; }
             p.inputPath = argv[++i];
         }
-        else if (a == "--epsilon") { // İkinizde de var
+        else if (a == "--epsilon") {
             if (i + 1 >= argc || !parse_double(argv[i+1], p.epsilon)) {
                 std::cerr << "[!] --epsilon <double>\n"; return std::nullopt;
             }
             ++i;
         }
-        else if (a == "--min-inliers") { // İkinizde de var
+        else if (a == "--min-inliers") {
             if (i + 1 >= argc || !parse_int(argv[i+1], p.minInliers)) {
                 std::cerr << "[!] --min-inliers <int>\n"; return std::nullopt;
             }
             ++i;
         }
-        else if (a == "--max-iters") { // İkinizde de var
+        else if (a == "--max-iters") {
             if (i + 1 >= argc || !parse_int(argv[i+1], p.maxIters)) {
                 std::cerr << "[!] --max-iters <int>\n"; return std::nullopt;
             }
             ++i;
         }
-        else if (a == "--angle-thresh") { // İkinizde de var
+        else if (a == "--angle-thresh") {
             if (i + 1 >= argc || !parse_double(argv[i+1], p.angleThreshDeg)) {
                 std::cerr << "[!] --angle-thresh <deg>\n"; return std::nullopt;
             }
             ++i;
         }
-        // --- Arkadaşının Eklediği Parametreler ---
-        else if (a == "--out-svg") { // Arkadaşının flag adı
+        // --- Parametreler ---
+        else if (a == "--out-svg") { // flag adı
             if (i + 1 >= argc) { std::cerr << "[!] --out-svg <path>\n"; return std::nullopt; }
             p.outSvg = argv[++i];
         }
-        else if (a == "--svg-size") { // Arkadaşından
+        else if (a == "--svg-size") {
             if (i + 1 >= argc || !parse_size(argv[i+1], p.svgWidth, p.svgHeight)) {
                 std::cerr << "[!] --svg-size <W>x<H> (ornegin 1200x900)\n"; return std::nullopt;
             }
             ++i;
         }
-        else if (a == "--svg-margin") { // Arkadaşından
+        else if (a == "--svg-margin") {
             if (i + 1 >= argc || !parse_int(argv[i+1], p.svgMargin)) {
                 std::cerr << "[!] --svg-margin <px>\n"; return std::nullopt;
             }
@@ -140,16 +140,16 @@ std::optional<CliParams> parse_cli(int argc, char* argv[]) {
         }
         // -----------------------------------------
         else {
-            // Bilinmeyen argüman (Arkadaşının hata verme mantığı korundu)
-            std::cerr << "[!] Bilinmeyen veya hatali arguman: " << a << "\n\n"; // Daha net mesaj
+            // Bilinmeyen argüman (Hata verme mantığı korundu)
+            std::cerr << "[!] Bilinmeyen veya hatali arguman: " << a << "\n\n";
             print_cli_help(argv[0]);
             return std::nullopt;
         }
     }
 
-    // Input path kontrolü (İkinizde de var, arkadaşının mesajı daha net)
+    // Input path kontrolü
     if (p.inputPath.empty()) {
-        std::cerr << "[!] Girdi dosyasi (--input) belirtilmedi.\n\n"; // Daha net mesaj
+        std::cerr << "[!] Girdi dosyasi (--input) belirtilmedi.\n\n";
         print_cli_help(argv[0]);
         return std::nullopt;
     }
