@@ -111,7 +111,8 @@ std::vector<Intersection> findPhysicalIntersections(
 
                     // 6. Mesafe Hesapla (İster 5)
                     // Robota (0,0) olan Öklid mesafesi
-                    double dist = std::sqrt(p_intersect.x * p_intersect.x + p_intersect.y * p_intersect.y);
+                    double dist =
+                        std::sqrt(p_intersect.x * p_intersect.x + p_intersect.y * p_intersect.y);
 
                     // 7. Geçerli kesişimi listeye ekle
                     validIntersections.push_back({p_intersect, angle, dist});

@@ -1,14 +1,22 @@
 #pragma once
-#include <string>
 #include <optional>
+#include <string>
 
 struct CliParams {
-    std::string inputPath;          // .toml dosya yolu (zorunlu)
-    std::string outSvg = "data/output1.svg";
-    double epsilon = 0.02;          // RANSAC mesafe eşiği
-    int    minInliers = 8;          // asgari inlier
-    int    maxIters   = 1000;       // RANSAC iter sayısı
-    double angleThreshDeg = 60.0;   // doğrular arası açı eşiği (derece)
+    // Girdi / çıktı
+    std::string inputPath;               // .toml dosya yolu veya URL (zorunlu)
+    std::string outSvg   = "data/output1.svg"; // Senin varsayılan yolun kullanıldı
+
+    // RANSAC / Geometri
+    double epsilon       = 0.02;        // RANSAC mesafe eşiği
+    int    minInliers    = 8;           // RANSAC asgari inlier
+    int    maxIters      = 1000;        // RANSAC iter sayısı
+    double angleThreshDeg= 60.0;        // Doğru çifti açı eşiği (deg)
+
+    // SVG görünüm (Arkadaşından eklendi)
+    int svgWidth  = 1200;               // SVG genişliği (piksel)
+    int svgHeight = 900;                // SVG yüksekliği (piksel)
+    int svgMargin = 40;                 // SVG kenar boşluğu (piksel)
 };
 
 /// argv'den parametreleri okur. Hata/--help durumunda std::nullopt döner.

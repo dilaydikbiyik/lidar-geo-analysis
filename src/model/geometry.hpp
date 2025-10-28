@@ -12,7 +12,6 @@
  */
 std::optional<Point> getSegmentIntersection(const Line& segA, const Line& segB);
 
-
 /**
  * Verilen tüm doğru parçalarını analiz eder.
  * Fiziksel olarak kesişen ve minimum açı şartını (örn: 60 derece) sağlayan

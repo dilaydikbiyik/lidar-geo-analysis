@@ -1,42 +1,53 @@
+# ================= Top-level CMakeLists.txt =================
+
 # Gerekli minimum CMake sürümünü belirtir
 cmake_minimum_required(VERSION 3.10)
 
 # Projenin adını belirler
 project(LidarGeoAnalysis CXX)
 
-# === HATA 2 ÇÖZÜMÜ: C++17 Standardını zorunlu kıl ===
-# Bu, "std::optional" hatasını çözecek
+# === C++17 Standardını zorunlu kıl ===
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED True) # ON yerine True kullanmak daha yaygındır
 
 
-# === Manuel Kaynak Dosya Listesi ===
-# Bu, "_main" hatasını (ve gelecekteki hataları) önler
-set(PROJECT_SOURCES
-        src/main.cpp
-
+# === Ortak Kütüphane: Ana Mantık ===
+# Projenin ana mantığını içeren tüm .cpp dosyaları burada listelenir.
+# Bu, main.cpp ve console_view.cpp HARİÇ tüm dosyaları içerir.
+add_library(lidar_core
+        # Controller
         src/controller/app_controller.cpp
-
-        # BU SATIRIN LİSTEDE OLMASI GEREKİYOR:
+        # Model
         src/model/geometry.cpp
-
         src/model/lidar.cpp
         src/model/ransac.cpp
         src/model/toml_parser.cpp
-
+        # Utils
         src/utils/cli.cpp
-
-        src/view/console_view.cpp
+        # View (SVG kısmı kütüphanede, Console kısmı executable'da)
         src/view/svg_writer.cpp
 )
 
+# === Header Yolu Ekleme ===
+# lidar_core kütüphanesinin ve onu kullanan diğer kodların
+# #include "model/types.hpp" gibi dosyaları bulabilmesi için.
+target_include_directories(lidar_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Ana çalıştırılabilir dosyayı bu kaynaklardan oluştur
-add_executable(proje_calistir ${PROJECT_SOURCES})
 
-# === HATA 1 ÇÖZÜMÜ: Header Yolu Ekleme ===
-# Bu, "utils/cli.hpp file not found" hatasını çözecek
-target_include_directories(proje_calistir PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+# === Ana Çalıştırılabilir Dosya ===
+# Sadece programın giriş noktası (main) ve konsol çıktısını içerir.
+add_executable(proje_calistir
+        src/main.cpp
+        src/view/console_view.cpp # Konsol çıktısı burada
+)
 
+# === Kütüphaneyi Çalıştırılabilir Dosyaya Bağlama ===
+# proje_calistir'in, lidar_core içindeki fonksiyonları
+# (findLinesRANSAC, loadScanFromFile vb.) kullanabilmesi için.
+target_link_libraries(proje_calistir PRIVATE lidar_core)
+
+
+# === Testler Alt Dizini ===
 # CMake'e testlerin olduğu "tests" adında bir alt klasör olduğunu söyle
+# (Bu satır iki versiyonda da aynıydı)
 add_subdirectory(tests)
