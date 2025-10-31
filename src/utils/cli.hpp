@@ -10,7 +10,7 @@ struct CliParams {
     // RANSAC / Geometri
     double epsilon       = 0.02;        // RANSAC mesafe eşiği
     int    minInliers    = 8;           // RANSAC asgari inlier
-    int    maxIters      = 1000;        // RANSAC iter sayısı
+    int    maxIters      = 2000;        // RANSAC iter sayısı
     double angleThreshDeg= 60.0;        // Doğru çifti açı eşiği (deg)
 
     // SVG görünüm
