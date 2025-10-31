@@ -4,23 +4,21 @@
 
 struct CliParams {
     // Girdi / çıktı
-    std::string inputPath;               // .toml dosya yolu veya URL (zorunlu)
-    std::string outSvg   = "data/output1.svg"; // Varsayılan yol kullanıldı
+    std::string inputPath;
+    std::string outSvg   = "data/output1.svg";
 
     // RANSAC / Geometri
-    double epsilon       = 0.02;        // RANSAC mesafe eşiği
-    int    minInliers    = 8;           // RANSAC asgari inlier
-    int    maxIters      = 2000;        // RANSAC iter sayısı
-    double angleThreshDeg= 60.0;        // Doğru çifti açı eşiği (deg)
+    double epsilon       = 0.02;
+    int    minInliers    = 8;
+    int    maxIters      = 2000;
+    double angleThreshDeg= 60.0;
 
     // SVG görünüm
-    int svgWidth  = 1200;               // SVG genişliği (piksel)
-    int svgHeight = 900;                // SVG yüksekliği (piksel)
-    int svgMargin = 40;                 // SVG kenar boşluğu (piksel)
+    int svgWidth  = 1200;
+    int svgHeight = 900;
+    int svgMargin = 40;
 };
 
-/// argv'den parametreleri okur. Hata/--help durumunda std::nullopt döner.
 std::optional<CliParams> parse_cli(int argc, char* argv[]);
 
-/// --help çıktısını üretir.
 void print_cli_help(const char* exeName);

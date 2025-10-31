@@ -1,9 +1,7 @@
 #pragma once
 
-#include "model/types.hpp" // LidarScan struct'ını kullanmak için
+#include "model/types.hpp"
 #include <string>
-#include <optional> // Hata durumları için
+#include <optional>
 
-// Verilen yoldaki .toml dosyasını okur ve bir LidarScan nesnesi döndürür.
-// Hata olursa std::nullopt döndürür.
 std::optional<LidarScan> loadScanFromFile(const std::string& path);

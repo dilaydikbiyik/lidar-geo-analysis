@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "model/types.hpp"  // Point, Line, (Intersection burada olacak)
+#include "model/types.hpp"
 
 struct SvgParams {
     int width  = 1200;

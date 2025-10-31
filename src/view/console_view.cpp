@@ -1,6 +1,6 @@
 #include "console_view.hpp"
-#include <iostream> // Bütün std::cout'lar sadece bu dosyada
-#include <iomanip>  // Rapor formatlaması için
+#include <iostream>
+#include <iomanip>
 
 namespace ConsoleView {
 
@@ -44,11 +44,11 @@ namespace ConsoleView {
 
     void printFinalReport(const std::vector<Intersection>& intersections) {
         std::cout << "--- Kesisim Raporu ---\n";
-        // Raporu formatlı bir şekilde yazdır
+        // Raporu yazdır
         for (size_t i = 0; i < intersections.size(); ++i) {
             const auto& k = intersections[i];
             std::cout << "#" << (i + 1) << " -> (" << k.position.x << ", " << k.position.y
-                      << ")  angle=" << std::fixed << std::setprecision(4) << k.angleDeg // Raporu daha hassas hale getirebiliriz
+                      << ")  angle=" << std::fixed << std::setprecision(4) << k.angleDeg
                       << " deg  dist=" << std::fixed << std::setprecision(4) << k.distanceToRobot << " m\n";
         }
     }

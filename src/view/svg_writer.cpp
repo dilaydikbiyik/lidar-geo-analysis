@@ -48,7 +48,7 @@ void saveToSVG(const std::string& out,
     f << "<svg xmlns='http://www.w3.org/2000/svg' width='" << sp.width
         << "' height='" << sp.height << "'>\n";
 
-    // Tanımlamalar (gradyanlar, gölgeler, desenler)
+    // Tanımlamalar
     f << "<defs>\n";
 
     // Arkaplan gradyanı
@@ -95,10 +95,10 @@ void saveToSVG(const std::string& out,
     f << "<rect width='100%' height='100%' fill='url(#bgGrad)'/>\n";
     f << "<rect width='100%' height='100%' fill='url(#grid)'/>\n\n";
 
-    // Eksenler(metre gostergeleri)
+    // Eksenler
     f << "<g id='axes' style='stroke:#6c757d; stroke-width:1; opacity:0.9;'>\n";
 
-    // Eksen çizgileri (X ve Y) - Sadece görünür alan içinde
+    // Eksen çizgileri
     f << " <line x1='" << Sx(minx) << "' y1='" << Sy(0)
         << "' x2='" << Sx(maxx) << "' y2='" << Sy(0) << "'/> \n";
     f << " <line x1='" << Sx(0) << "' y1='" << Sy(miny)
@@ -106,10 +106,10 @@ void saveToSVG(const std::string& out,
 
     f << " <g style='font-family:Arial, sans-serif; font-size:10px; fill:#495057; stroke:none;'>\n";
 
-    // X ekseni için metre işaretleri (tickler)
+    // X ekseni metre işaretleri
     for (int m = std::floor(minx); m <= std::ceil(maxx); ++m)
     {
-        if (m == 0) continue; // Orijini atla
+        if (m == 0) continue;
         double tx = Sx(m);
         double ty = Sy(0);
         f << " <line x1='" << tx << "' y1='" << (ty - 3)
@@ -118,19 +118,19 @@ void saveToSVG(const std::string& out,
             << "' text-anchor='middle'>" << m << "</text>\n";
     }
 
-    // Y ekseni için metre işaretleri (tickler)
+    // Y ekseni metre işaretleri
     for (int m = std::floor(miny); m <= std::ceil(maxy); ++m)
     {
-        if (m == 0) continue; // Orijini atla
+        if (m == 0) continue;
         double tx = Sx(0);
         double ty = Sy(m);
-        f << " <line x1='" << (tx - 4) << "' y1='" << ty
-            << "' x2='" << (tx + 4) << "' y2='" << ty << "' style='stroke:#6c757d;'/>\n";
+        f << " <line x1='" << (tx - 3) << "' y1='" << ty
+            << "' x2='" << (tx + 3) << "' y2='" << ty << "' style='stroke:#6c757d;'/>\n";
         f << " <text x='" << (tx - 10) << "' y='" << (ty + 4)
             << "' text-anchor='end'>" << m << "</text>\n";
     }
 
-    // Orijin (0,0) etiketi
+    // Orijin etiketi
     f << " <text x='" << (Sx(0) - 10) << "' y='" << (Sy(0) + 15)
         << "' text-anchor='end' font-size='11'>0</text>\n";
     f << " </g>\n";
@@ -147,7 +147,7 @@ void saveToSVG(const std::string& out,
         << "Nokta: " << pts.size() << " | Doğru: " << segs.size()
         << " | Kesişim: " << xs.size() << "</text>\n\n";
 
-    // LIDAR noktaları - küçük ve hafif
+    // LIDAR noktaları
     f << "<g id='lidar-points'>\n";
     for (auto& p : pts)
     {
@@ -158,7 +158,7 @@ void saveToSVG(const std::string& out,
     }
     f << "</g>\n\n";
 
-    // Tespit edilen doğrular - parlak yeşil
+    // Tespit edilen doğrular
     f << "<g id='detected-lines'>\n";
     for (size_t i = 0; i < segs.size(); i++)
     {
@@ -170,12 +170,11 @@ void saveToSVG(const std::string& out,
     }
     f << "</g>\n\n";
 
-    // Kesişim noktaları ve mesafe çizgileri
+    // Kesişim noktaları
     if (!xs.empty())
     {
         f << "<g id='intersections'>\n";
 
-        // Kutu çakışmalarını önlemek için pozisyonları sakla
         std::vector<std::tuple<double, double, double, double>> used_boxes; // x, y, w, h
 
         for (size_t i = 0; i < xs.size(); i++)
@@ -186,13 +185,13 @@ void saveToSVG(const std::string& out,
             double rx = Sx(0);
             double ry = Sy(0);
 
-            // Mesafe çizgisi - kesikli kırmızı
+            // Mesafe çizgisi
             f << " <line x1='" << rx << "' y1='" << ry
                 << "' x2='" << ix << "' y2='" << iy
                 << "' stroke='#ff6b6b' stroke-width='2' stroke-dasharray='8,4' "
                 << "opacity='0.7'/>\n";
 
-            // Kesişim işareti - X şekli
+            // Kesişim işareti
             double mark_size = 8;
             f << " <g filter='url(#shadow)'>\n";
             f << " <line x1='" << (ix - mark_size) << "' y1='" << (iy - mark_size)
@@ -203,12 +202,11 @@ void saveToSVG(const std::string& out,
                 << "' stroke='url(#intersectGrad)' stroke-width='3' stroke-linecap='round'/>\n";
             f << " </g>\n";
 
-            // Bilgi kutusu - akıllı yerleştirme
+            // Bilgi kutusu
             double box_w = 45;
             double box_h = 32;
             double box_padding = 15;
 
-            // Olası pozisyonlar: sağ, sol, üst, alt - daha fazla mesafe
             std::vector<std::pair<double, double>> candidates = {
                 {ix + 18, iy - box_h / 2}, // Sağ
                 {ix - box_w - 18, iy - box_h / 2}, // Sol
@@ -220,20 +218,17 @@ void saveToSVG(const std::string& out,
             double box_y = candidates[0].second;
             bool found_spot = false;
 
-            // Her pozisyonu test et
             for (auto& cand : candidates)
             {
                 double test_x = cand.first;
                 double test_y = cand.second;
 
-                // Ekran sınırlarını kontrol et
                 if (test_x < 10 || test_x + box_w > sp.width - 10 ||
                     test_y < 70 || test_y + box_h > sp.height - 120)
                 {
                     continue;
                 }
 
-                // Diğer kutularla çakışma kontrolü
                 bool overlaps = false;
                 for (auto& used : used_boxes)
                 {
@@ -261,7 +256,6 @@ void saveToSVG(const std::string& out,
                 }
             }
 
-            // Eğer hiçbir yer bulunamazsa sadece görünür tut
             if (found_spot)
             {
                 used_boxes.push_back({box_x, box_y, box_w, box_h});
@@ -285,25 +279,24 @@ void saveToSVG(const std::string& out,
         f << "</g>\n\n";
     }
 
-    // Robot pozisyonu - Base64 encoded SVG robot image ile animasyon
+    // Robot pozisyonu
     double robot_x = Sx(0);
     double robot_y = Sy(0);
-    double robot_size = 30; // Minik boyut
+    double robot_size = 30;
 
     f << "<g id='robot' transform='translate(" << (robot_x - robot_size / 2) << "," << (robot_y - robot_size / 2) <<
         ")'>\n";
 
-    // Yukarı aşağı hareket animasyonu
+    // Hareket animasyonu
     f << " <animateTransform attributeName='transform' type='translate' "
         << "values='" << (robot_x - robot_size / 2) << "," << (robot_y - robot_size / 2) << "; "
         << (robot_x - robot_size / 2) << "," << (robot_y - robot_size / 2 - 4) << "; "
         << (robot_x - robot_size / 2) << "," << (robot_y - robot_size / 2) << "' "
         << "dur='2s' repeatCount='indefinite'/>\n";
 
-    // Sevimli robot SVG (basitleştirilmiş ve küçük)
     f << " <g transform='scale(0.75)'>\n";
 
-    // Robot kafası - mavi
+    // Robot kafası
     f << " <rect x='8' y='2' width='24' height='20' rx='6' fill='#4dabf7' stroke='#1971c2' stroke-width='2'/>\n";
     f << " <rect x='12' y='6' width='16' height='12' rx='3' fill='#74c0fc'/>\n";
     f << " <circle cx='18' cy='10' r='2' fill='#1971c2'/>\n";
@@ -355,7 +348,6 @@ void saveToSVG(const std::string& out,
     f << " <text x='" << (legend_x + 10) << "' y='" << (legend_y + 20)
         << "' font-family='Arial, sans-serif' font-size='12' font-weight='bold' fill='#212529'>Lejant</text>\n";
 
-    // Lejant öğeleri
     double ly = legend_y + 38;
     f << " <circle cx='" << (legend_x + 15) << "' cy='" << ly
         << "' r='2' fill='#adb5bd'/>\n";

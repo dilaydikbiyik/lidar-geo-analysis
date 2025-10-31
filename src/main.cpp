@@ -1,19 +1,15 @@
 #include "utils/cli.hpp"
 #include "controller/app_controller.hpp"
 #include <iostream>
-#include <stdexcept> // std::exception için
+#include <stdexcept>
 
 int main(int argc, char* argv[]) {
-    // 1. Yazdığınız CLI parser'ını çağırın
     std::optional<CliParams> params = parse_cli(argc, argv);
 
-    // Eğer kullanıcı --help dediyse veya parametre hatası yaptıysa,
-    // parse_cli zaten std::nullopt döndürür ve yardım mesajını basar.
     if (!params.has_value()) {
-        return 1; // Hata ile çık
+        return 1;
     }
 
-    // 2. Controller'ı oluşturun ve işi ona devredin
     AppController controller(params.value());
 
     try {
@@ -23,5 +19,5 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    return 0; // Başarıyla tamamlandı
+    return 0;
 }

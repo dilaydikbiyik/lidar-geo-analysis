@@ -2,9 +2,9 @@
 
 #include <string>
 #include <vector>
-#include "model/types.hpp" // Intersection'ı bilmesi için
+#include "model/types.hpp"
 
-// Tüm konsol çıktı fonksiyonlarını bir 'namespace' altında
+
 namespace ConsoleView {
 
     void printControllerStart(const std::string& inputPath);
