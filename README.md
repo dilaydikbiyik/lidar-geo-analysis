@@ -1,90 +1,88 @@
-# 📍 Lidar Geo-Analysis
+# Lidar Geo-Analysis
 
-Bu proje, 2 Boyutlu LiDAR taramalarından elde edilen nokta bulutu (point cloud) verilerini okuyarak analiz eden, RANSAC algoritması ile bu noktalardan geometrik yapılar (doğru parçaları, duvarlar, koridorlar vb.) çıkaran ve sonuçları SVG formatında görselleştiren modüler bir C++ uygulamasıdır. Proje, MVC (Model-View-Controller) mimarisi prensiplerine uygun olarak tasarlanmıştır.
+A modular C++ application that reads 2D LiDAR point-cloud scans, extracts geometric structures (line segments, walls, corridors, etc.) from them using the RANSAC algorithm, and renders the results as SVG. The project follows an MVC (Model-View-Controller) architecture.
 
-## 🚀 Özellikler
+## Features
 
-- **TOML Veri Formatı Desteği:** Ham LiDAR tarama verilerini yapılandırılmış `.toml` dosyalarından okur ve ayrıştırır.
-- **Polar - Kartezyen Dönüşümü:** Sensörden gelen uzaklık ve açı (polar) koordinatlarındaki veriyi işlenebilir Kartezyen ($x, y$) koordinat düzlemine çevirir.
-- **RANSAC Algoritması (Çizgi Çıkarımı):** Gürültülü nokta bulutu verileri içinde iteratif istatistiksel yöntemlerle en uygun doğru parçası denklemlerini bularak ortamdaki fiziksel engelleri (duvar, sınır vb.) tespit eder.
-- **Geometrik Kesişim Analizi:** Çıkarılan doğru parçalarının kesişim noktalarını ve aralarındaki açıları bularak haritadaki köşe (corner) noktalarını hesaplar.
-- **Dinamik SVG Görselleştirme:** Elde edilen noktalar, tespit edilen çizgiler ve kesişim noktaları ölçeklenebilir vektörel bir SVG dosyası olarak renkli biçimde dışa aktarılır.
-- **Uzaktan Veri İndirme Desteği:** Yalnızca yerel dosyaları değil, bir URL üzerinden sunulan veri dosyalarını da çekerek işleyebilir. 
+- **TOML data format support** — reads and parses raw LiDAR scan data from structured `.toml` files.
+- **Polar-to-Cartesian conversion** — converts sensor range/angle (polar) readings into a processable Cartesian (x, y) coordinate plane.
+- **RANSAC line extraction** — iteratively fits the best line-segment equations to noisy point-cloud data to detect physical obstacles (walls, boundaries, etc.).
+- **Geometric intersection analysis** — computes intersection points and angles between extracted line segments to identify corner points on the map.
+- **Dynamic SVG visualization** — exports the resulting points, detected lines, and intersection points as a scalable, color-coded SVG file.
+- **Remote data fetching** — can process not only local files but also data served over a URL.
 
-## 🗂️ Proje Yapısı
+## Project Structure
 
-Proje dosyaları mantıksal bir MVC düzeninde klasörlere ayrılmıştır:
+The project is organized into a logical MVC layout:
 
 ```text
 lidar-geo-analysis/
-├── CMakeLists.txt        # Proje genel CMake derleme yapılandırması
-├── README.md             # Proje dokümantasyonu
-├── data/                 # Örnek LiDAR veri dosyaları (.toml uzantılı)
-├── src/                  # Kaynak kod dizini
-│   ├── main.cpp          # Ana yürütülebilir dosya (Uygulamanın giriş noktası)
-│   ├── controller/       # MVC - Kontrolcü katmanı (Veri akışı ve iş mantığı yönetimi)
-│   ├── model/            # MVC - Veri ve Algoritma katmanı (Geometry, Ransac, Lidar, Toml Parser vb.)
-│   ├── utils/            # Yardımcı araçlar (CLI parametre ayrıştırıcı, Ağ işlemleri)
-│   └── view/             # MVC - Sunum katmanı (Console View, SVG Writer vb.)
-└── tests/                # Birim (Unit) testlerinin bulunduğu klasör ve kendi CMakeLists'i
+├── CMakeLists.txt        # Top-level CMake build configuration
+├── README.md
+├── data/                 # Sample LiDAR data files (.toml)
+├── src/
+│   ├── main.cpp          # Application entry point
+│   ├── controller/       # MVC — data flow and business logic
+│   ├── model/            # MVC — data & algorithms (Geometry, RANSAC, Lidar, TOML parser)
+│   ├── utils/             # Helpers (CLI argument parsing, networking)
+│   └── view/              # MVC — presentation layer (console view, SVG writer)
+└── tests/                 # Unit tests and their own CMakeLists.txt
 ```
 
-## 🛠️ Kurulum ve Derleme (Build) Gereksinimleri
+## Build Requirements
 
-- **C++ Sürümü:** C++17 veya daha yenisi destekleyen bir derleyici (GCC, Clang, MSVC)
-- **Derleme Sistemi:** CMake (Tavsiye edilen minimum sürüm 3.10)
+- **C++ standard:** C++17 or newer (GCC, Clang, or MSVC)
+- **Build system:** CMake 3.10+ (recommended minimum)
 
-### ⚙️ Derleme Adımları (Linux / MacOS / Windows)
-
-Terminal veya komut istemcisinde proje kök dizininde sırasıyla şu komutları çalıştırın:
+### Build steps (Linux / macOS / Windows)
 
 ```bash
-# 1. Derleme dosyaları için bir klasör oluşturun ve içine girin:
+# 1. Create and enter a build directory
 mkdir build
 cd build
 
-# 2. CMake konfigürasyonunu başlatarak Make/Ninja/VS dosyalarını üretin:
+# 2. Configure the build (generates Make/Ninja/VS files)
 cmake ..
 
-# 3. Projeyi derleyin:
+# 3. Compile
 cmake --build .
-# (Linux/MacOS ortamlarında alternatif olarak 'make' komutunu da kullanabilirsiniz)
+# On Linux/macOS you can alternatively run `make`
 ```
 
-Derleme işlemi bittikten sonra `build` klasörü içinde platformunuza göre `proje_calistir` (veya `proje_calistir.exe`, proje ismine göre değişebilir) isimli çalıştırılabilir dosya elde edilecektir. Eş zamanlı olarak CTest testleri de yapılandırılır.
+After a successful build, the `build` directory will contain an executable (name depends on the project's target, e.g. `lidar_geo_analysis` or `.exe` on Windows). CTest is configured alongside the build.
 
-## 💻 Kullanım (CLI Seçenekleri)
+## Usage (CLI options)
 
-Oluşturulan CLI uygulaması çeşitli parametrelerle LiDAR taramalarının nasıl işleneceğine müdahale etmenizi sağlar.
-
-**Temel Kullanım:**
+**Basic usage — process a local TOML file and export the map as SVG:**
 ```bash
-# Yerel bir TOML dosyasını işleyip haritayı SVG olarak dışa aktarmak
-./proje_calistir -i ../data/lidar1.toml -o cikti_harita.svg
+./lidar_geo_analysis -i ../data/lidar1.toml -o output_map.svg
 ```
 
-**Web Üzerinden Veri Okuma:**
+**Reading data from a URL:**
 ```bash
-# URL üzerinden TOML dosyası alıp işlemek
-./proje_calistir -i https://example.com/lidar_test.toml -o web_harita.svg
+./lidar_geo_analysis -i https://example.com/lidar_test.toml -o web_map.svg
 ```
 
-**Gelişmiş RANSAC Ayarları ile Kullanım:**
-RANSAC algoritmasının tolerans (epsilon), iterasyon sayısı veya en az nokta (min inliers) gibi kritik parametrelerine ince ayar yaparak model kalitesini artırabilirsiniz:
+**Advanced RANSAC tuning:**
+Fine-tune RANSAC parameters such as tolerance (epsilon), iteration count, or minimum inliers to improve model quality:
 ```bash
-./proje_calistir -i ../data/lidar_test.toml --minInliers 15 --epsilon 0.1 --maxIters 1000 -o detayli_cikti.svg
+./lidar_geo_analysis -i ../data/lidar_test.toml --minInliers 15 --epsilon 0.1 --maxIters 1000 -o detailed_output.svg
 ```
 
-## 🧪 Birim Testleri Çalıştırma
+## Running Unit Tests
 
-Projenin güvenilirliğini ve temel matematik fonksiyonlarını sınamak adına yazılmış CTest uyumlu birim testleri (Unit Tests) bulunmaktadır. Testleri çalıştırmak için `build` dizininde:
+CTest-compatible unit tests cover the project's core geometry and math functions. From the `build` directory:
 
 ```bash
 cd build
 ctest --output-on-failure
-# veya test yürütülebilir dosyalarını (ör: tests/test_geometry) doğrudan çalıştırabilirsiniz.
+# or run the test executables directly, e.g. tests/test_geometry
 ```
 
-## 👥 Katkı Sağlama (Contributing)
+## Contributing
 
-Geliştirmelere (örn. RANSAC verimliliğinin artırılması, GUI arayüzü eklenmesi, farklı tarayıcı formatlarının desteklenmesi) dair Pull Request (PR) göndererek katkıda bulunabilirsiniz. Raporlamak istediğiniz hatalar için "Issues" bölümünü kullanabilirsiniz.
+Contributions are welcome — for example, improving RANSAC performance, adding a GUI, or supporting additional scan formats. Please open a Pull Request, or use the Issues tab to report bugs.
+
+## License
+
+No license specified yet.
