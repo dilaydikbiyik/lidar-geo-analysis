@@ -2,6 +2,14 @@
 
 A modular C++ application that reads 2D LiDAR point-cloud scans, extracts geometric structures (line segments, walls, corridors, etc.) from them using the RANSAC algorithm, and renders the results as SVG. The project follows an MVC (Model-View-Controller) architecture.
 
+## 📸 Screenshots
+
+### 🗺️ SVG Output — Detected Lines & Intersections
+
+![SVG Output](assets/images/ss_01_svg_output.png)
+
+---
+
 ## Features
 
 - **TOML data format support** — reads and parses raw LiDAR scan data from structured `.toml` files.
